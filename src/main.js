@@ -1,7 +1,12 @@
 import { createApp } from 'vue'
-import './style.css'
+import './assets/css/globel.css'
 import App from './App.vue'
-
+//注册路由
 import router from './routers/index.js'
 
-createApp(App).use(router).mount('#app')
+//注册pinia
+import { createPinia } from 'pinia'
+let pinia=createPinia()
+
+
+createApp(App).use(router).use(pinia).mount('#app')
