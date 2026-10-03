@@ -9,4 +9,9 @@ import { createPinia } from 'pinia'
 let pinia=createPinia()
 
 
-createApp(App).use(router).use(pinia).mount('#app')
+//使用elementui
+import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
+
+
+createApp(App).use(router).use(pinia).use(ElementPlus).mount('#app')
