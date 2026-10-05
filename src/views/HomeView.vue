@@ -1,54 +1,45 @@
-
 <template>
-<h1>我才是真主页</h1>
-    <div class="main">
-        <h2>cpu核数为：{{ data.cpu_count }}</h2>
-        <h2>cpu使用率为：{{ data.cpu_percent}}%</h2>
 
-    </div>
-    <hr>
-    <h1>elementui的使用</h1>
-    <el-button type="success" @click="showAlert">Success</el-button>
 
-    <h1>布局的使用</h1>
-    <el-row>
-        <el-col :span="12">
-            <div class="div1" />
-        </el-col>
-        <el-col :span="12">
-            <div class="div2" />
-        </el-col>
-    </el-row>
 </template>
-<script setup>
-import { ref } from 'vue';
-import axios from 'axios'
-const data=ref({})                             //1.准备一个响应式变量，初始为空对象
-axios.get('http://127.0.0.1:8080/api/v1/home/main/cpu')//2.向这个地址发GET请求
-    .then(res=>{                              //3.拿到响应后
-        if (res.data.code==100){                //判断后端返回的code
-            data.value=res.data.data            //成功就把数据存进data   res.data是整个JSON数据
-        }
-    })
+<script>
+import { reqServerData } from '../api/home';
+//定时，每隔5秒，向后端发送一次请求--》动态变的--》websocket会更有优势
+//1.导入依赖--安装echars  --》 npm install echarts --save
+import {ref,onMounted,onBeforeUnmount} from 'vue';
+import { reqServerData } from '../api/home';
+import * as echarts from 'echarts'
+const systemInfo=ref({})
+let pollInterval=null
 
-function showAlert(){
-    alert('弹出来了')
+//2.写一个async的函数
+async function getServerData(){
+    let res=await reqServerData()
+    systemInfo.value=res.data
+    renderCharts()
 }
+
+
+//3.渲染页面--》echars-->百度-->柱状图，饼形图，折线图
+
+
+//4.每隔5s发送一次请求--》定时器，定时执行--》
+const startPolling=()=>{
+    getServerData()
+    pollInterval=setInterval(getServerData,5000)//每间隔5秒请求一次数据
+}
+//5.当组件挂载时，开启定时器，组件销毁时，清理定时器
+onMounted(()=>{     //组件挂载
+    startPolling();
+})
+onBeforeUnmount(()=>{
+    if(pollInterval){
+        clearInterval(pollInterval)
+    }
+})
+
 
 </script>
 <style scoped>
-.main{
-    background-color: pink;
-    height: 200px;
-    width: 100%;
-}
 
-.div1{
-    background-color: red;
-    height: 20px;
-}
-.div2{
-    background-color: aqua;
-    height: 20px;
-}
 </style>
