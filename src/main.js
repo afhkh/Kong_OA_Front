@@ -13,5 +13,13 @@ let pinia=createPinia()
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
+//图标
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
-createApp(App).use(router).use(pinia).use(ElementPlus).mount('#app')
+
+const app=createApp(App)
+for(const[key,component] of Object.entries(ElementPlusIconsVue)){
+    app.component(key,component)
+}
+
+app.use(router).use(pinia).use(ElementPlus).mount('#app')
