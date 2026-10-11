@@ -55,6 +55,9 @@ import {ref,reactive} from "vue";
 import {ElMessage} from "element-plus";
 import {reqLogin} from "../api/system.js";
 import {useRouter} from 'vue-router'
+import { definedUser} from "../store/user.js";
+const $store=definedUser()
+
 let $router=useRouter()
 const loginForm=reactive({
   username:'',
@@ -68,8 +71,11 @@ async function Login(){
     // 1.2 发送请求登录
     let res=await reqLogin(loginForm.username,loginForm.password)
     // 需要报错到cookie中---》如果用户没登录，访问任何页面都跳转都login
+    //借助于pinia实现
+    $store.set_user({username:res.username,avatar:res.avatar,token:res.token})
     // 1.3 如果正常走过来，说明登录成功--》跳转到首页
-    $router.push('/')
+
+    $router.push('/index')
   }else {
          ElMessage({
             message: '用户名或密码必填',

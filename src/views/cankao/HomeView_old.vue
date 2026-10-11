@@ -36,7 +36,7 @@ import { ref } from 'vue';
 
 //---之后-----
 const data=ref({})
-import { reqHomeData } from '../api/home';
+import { reqHomeData } from '../../api/home';
 async function getHomeData(){
     let res = await reqHomeData()
     data.value =res.data
