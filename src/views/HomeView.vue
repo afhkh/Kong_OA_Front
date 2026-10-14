@@ -43,6 +43,17 @@
 <script setup>
 import Sidebar from '../components/Sidebar.vue';
 
+import Tabs from '../components/Tabs.vue';
+
+import { definedUser } from '../store/user.js';
+let $store=definedUser()
+import { useRouter } from 'vue-router';
+let $router=useRouter()
+function handleLogout(){
+  $store.log_out()
+  //路由跳转到登录页面
+  $router.push('/login')
+}
 </script>
 <style scoped>
 .el-container {

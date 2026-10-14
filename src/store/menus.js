@@ -18,7 +18,16 @@ export const definedMenus =defineStore(
 
         },
         actions:{
-           
+           addTab(tab){
+            let index=this.editableTabs.findIndex(e=>e.name===tab.name) //查找是否存在该标签，没找到返回-1，找到就返回对应下标
+            if (index===-1){
+                this.editableTabs.push({
+                    title:tab.title,
+                    name:tab.name
+                });
+            }
+            this.editableTabsValue=tab.name
+           }
         }
     }
 )

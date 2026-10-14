@@ -76,6 +76,12 @@
   </el-menu>
 </template>
 <script setup>
+import { definedMenus } from '../store/menus';
+let $store=definedMenus()
+function selectMenu(item){
+  $store.addTab(item)
+}
+
 
 </script>
 <style scoped>
