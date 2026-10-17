@@ -13,62 +13,24 @@
         <span slot="title">首页</span>
       </el-menu-item>
     </router-link>
-    <el-sub-menu index="3">
+
+    <el-sub-menu index="menu.name" v-for="menu in menuList">
       <template #title>
         <el-icon :size="20">
-          <Setting/>
+          <!-- 小图标动态变化 -->
+          <component :is="menu.icon"></component>
         </el-icon>
-        <span>系统管理</span>
+        <span>{{ menu.title }}</span>
       </template>
       <el-menu-item-group>
-        <router-link to="/info">
-          <el-menu-item index="3-6" @click="selectMenu({name:'Info',title:'服务性能'})">
+        <router-link :to="item.path" v-for="item in menu.children">
+          <el-menu-item :index="item.name" @click="selectMenu(item)">
             <el-icon>
-              <PieChart/>
+              <component :is="item.icon"></component>
             </el-icon>
-            服务性能
+            {{ item.title }}
           </el-menu-item>
         </router-link>
-        <router-link to="/user">
-          <el-menu-item index="3-1" @click="selectMenu({name:'User',title:'用户管理'})">
-            <el-icon>
-              <UserFilled/>
-            </el-icon>
-            用户管理
-          </el-menu-item>
-        </router-link>
-        <router-link to="/role">
-          <el-menu-item index="3-2" @click="selectMenu({name:'Role',title:'角色管理'})">
-            <el-icon>
-              <ChatDotRound/>
-            </el-icon>
-            角色管理
-          </el-menu-item>
-        </router-link>
-       <router-link to="/menu">
-         <el-menu-item index="3-3" @click="selectMenu({name:'Menu',title:'菜单管理'})">
-           <el-icon>
-             <Menu/>
-           </el-icon>
-           菜单管理
-         </el-menu-item>
-       </router-link>
-       <router-link to="/dept">
-         <el-menu-item index="3-4" @click="selectMenu({name:'Dept',title:'部门管理'})">
-           <el-icon>
-             <Avatar/>
-           </el-icon>
-           部门管理
-         </el-menu-item>
-       </router-link>
-       <router-link to="/job">
-         <el-menu-item index="3-5" @click="selectMenu({name:'Job',title:'岗位管理'})">
-           <el-icon>
-             <Mug/>
-           </el-icon>
-           岗位管理
-         </el-menu-item>
-       </router-link>
 
       </el-menu-item-group>
     </el-sub-menu>
@@ -77,7 +39,17 @@
 </template>
 <script setup>
 import { definedMenus } from '../store/menus';
+import { computed } from 'vue';
 let $store=definedMenus()
+
+//拿到去后端请求回来的menu列表，pinia中的：menuList
+const menuList=computed({
+  get(){
+    //这个值变--》外层的menuList也跟着变--》计算属性
+    return $store.menuList
+  }
+})
+
 function selectMenu(item){
   $store.addTab(item)
 }

@@ -10,7 +10,14 @@ export const definedMenus =defineStore(
                 editableTabs:[{
                     title:'首页',
                     name:'Index',
-                }]
+                }],
+
+                //1.从来没有发请求获取过动态路由,一开始就是false，加载过就是true
+                hasRoutes:false,
+                //2.一旦加载过，左侧菜单列表--》存储
+                menuList:[],//字典套列表--》后端返回的nav对应的数据
+                //3.按钮权限--》后端返回的authoritys对应的数据
+                permList:[]
 
             }
         },
@@ -27,6 +34,17 @@ export const definedMenus =defineStore(
                 });
             }
             this.editableTabsValue=tab.name
+           },
+
+           //4.我们正常使用pinia，我们不直接操作变量，而是通过方法去操作--》如果是获取{使用}变量，直接用即可
+           setMenuList(menus){
+                this.menuList=menus
+           },
+           setPermList(perms){
+                this.permList=perms
+           },
+           changeRouteStatus(hasRoutes){
+                this.hasRoutes=hasRoutes
            }
         }
     }
