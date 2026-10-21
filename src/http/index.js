@@ -18,7 +18,7 @@ request.interceptors.request.use(config=>{
     //2.1从cookie中取出用户的登录信息，如果有，就放在请求头中携带
     let token=$cookie.get('token')
     if(token){
-        config.headers.Authorization=token
+        config.headers.Authorization='Bearer '+token  //Bearer后面要加空格
     }
     return config
 })
