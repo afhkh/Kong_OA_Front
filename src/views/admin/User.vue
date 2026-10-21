@@ -33,7 +33,8 @@
     <el-divider border-style="dashed" />
 
     <div class="area-table">
-        <el-table ref="multipleTableRef" :data="usersData" row-key="id" style="width: 100%"
+        <!-- 后端返回来的 usersData 在这里 -->
+        <el-table ref="multipleTableRef" :data="usersData" row-key="id" style="width: 100%"    
             @selection-change="handleSelectionChange">
             <!-- 接下来就是表字段了 -->
             <el-table-column type="selection" :selectable="selectable" width="55" />
