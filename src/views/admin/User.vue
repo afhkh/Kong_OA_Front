@@ -26,7 +26,7 @@
         <span>用户列表</span>
         <div>
             <el-button type="primary">新增</el-button>
-            <el-button type="success">批量删除</el-button>
+            <el-button type="success" @click="deleteHandle()">批量删除</el-button>
             <el-button type="danger">批量停用</el-button>
         </div>
     </div>
@@ -103,8 +103,10 @@
 
 <script setup>
 import { reactive,ref } from 'vue'
-import { reqUserList } from '../../api/user'
-const searchForm = reactive({
+import {ElMessage} from 'element-plus'
+import { reqUserList,reqDeleteUser } from '../../api/user'
+import { ElMessage } from 'element-plus'
+const searchForm = reactive({      //reactive 能让数据变化被页面感知，但不会自动帮你发送网络请求。
   username: '',
   nick_name: '',
   is_active:true,
@@ -112,17 +114,25 @@ const searchForm = reactive({
   page_size:5
 })
 const total=ref(0)
+
+//定义列表，存放选中的用户
+const multipleSelection=ref([])
+
 //搜索按钮被点击
 const onSubmit = () => {
-  console.log('submit!')
+    searchForm.page=1
+    searchForm.page_size=5
+    getUserList()
 }
 
 //2.分页相关2个函数
 function handleSizeChange(val){
     searchForm.page_size=val
+    getUserList()
 }
 function handleCurrentChange(val){
     searchForm.page=val
+    getUserList()
 }
 
 //3.向后端发请求，获取所有用户数据，渲染在页面上
@@ -133,6 +143,36 @@ async function getUserList() {
     total.value=res.total
 }
 getUserList()
+
+//4.选中某个用户会触发
+function handleSelectionChange(val){
+    multipleSelection.value=val
+
+}
+//删除功能
+async function deleteHandle(id) {
+    let ids=[]
+    //如果传了id，就是单删
+    if (id){
+        ids.push(id)
+    }else{
+        multipleSelection.value.forEach(row=>{
+            ids.push(row.id)
+        }
+        )
+    }
+    //如果不传id就以multipleSelection为准，多删
+    let res=await reqDeleteUser(ids)
+    ElMessage({
+        message:'删除成功',
+        type:'success',
+        plain:true,
+        onClose:()=>{
+            getUserList()
+        }
+    })
+
+}
 </script>
 
 <style scoped>
@@ -149,5 +189,10 @@ getUserList()
 .area-btn>span{
     font-size: 20px;
     font-weight: bold;
+}
+.area-page{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
 }
 </style>
