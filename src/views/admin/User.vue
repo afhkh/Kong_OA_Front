@@ -105,7 +105,6 @@
 import { reactive,ref } from 'vue'
 import {ElMessage} from 'element-plus'
 import { reqUserList,reqDeleteUser } from '../../api/user'
-import { ElMessage } from 'element-plus'
 const searchForm = reactive({      //reactive 能让数据变化被页面感知，但不会自动帮你发送网络请求。
   username: '',
   nick_name: '',
