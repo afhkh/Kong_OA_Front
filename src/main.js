@@ -22,4 +22,4 @@ for(const[key,component] of Object.entries(ElementPlusIconsVue)){
     app.component(key,component)
 }
 
-app.use(router).use(pinia).use(ElementPlus).mount('#app')
+app.use(pinia).use(router).use(ElementPlus).mount('#app')

@@ -13,7 +13,7 @@ import Index from '../views/admin/Index.vue'
 // import Role from '../views/admin/Role.vue'
 // import User from '../views/admin/User.vue'
 
-import { reqMenus } from '../api/system.js'
+import { reqAuth } from '../api/system.js'
 
 import { definedMenus } from '../store/menus.js'
 const router= createRouter({
@@ -100,7 +100,7 @@ function menuToRoute(menu){
 async function reqMenuFunc(){
     let $store=definedMenus()
     //发送请求，获取动态路由的函数
-    let res=await reqMenus() //reqMenus  是在api/system.js中
+    let res=await reqAuth() //reqAuth  是在api/system.js中
     //菜单列表套字典
     $store.setMenuList(res.nav)
     //按钮权限
@@ -164,7 +164,7 @@ async function reqMenuFunc(){
 //如果token为空，访问任何页面，都重定向到login
 //to：去哪个路由对象，from:是从哪个路由对象过来，next是个函数，如果允许它跳转，直接执行next()
 
-router.beforeEach((to,from,next)=>{
+router.beforeEach(async (to,from,next)=>{
     let token=$cookie.get('token')
     //1.拿到pinia的menu的对象,这个初始化，不能放在外面--》如果放在外面--》如果放外面，在main.js中导入import router from "./routers";,代码会执行，而此时pinia还没有初始化
 
@@ -173,12 +173,18 @@ router.beforeEach((to,from,next)=>{
     let hasRoute=$store.hasRoutes
 
     if(to.path=='/login'){//访问登录页面，直接去
-        next()
+        return next()
     }else if(!token){
         //重定向到login
-        next({path:'/login'})
+        return next({path:'/login'})
     }else if(token && !hasRoute){//token有值：登录了，但是hasRoute是false，还没有加载过动态路由--》发送请求，获取动态路由
-        reqMenuFunc()
+        try{
+            await reqMenuFunc()
+            //注册动态路由后，重新匹配刷新时访问的地址
+            return next({...to,replace:true})
+        }catch(error){
+            return next({path:'/login'})
+        }
     }
     next()
 })
