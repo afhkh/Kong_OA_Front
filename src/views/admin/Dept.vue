@@ -50,7 +50,8 @@
         <template #default="scope">
           <el-button type="text" @click="editHandle(scope.row.id)">编辑</el-button>
           <el-divider direction="vertical"></el-divider>
-          <el-popconfirm title="你确定删除吗?" @confirm="delHandle(scope.row.id)">
+          <!-- scope.row.id 表示这一行数据的id，scope.row表示这一行数据的对象 -->
+          <el-popconfirm title="你确定删除吗?" @confirm="delHandle(scope.row.id)">  
             <template #reference>
               <el-button link type="danger">删除</el-button>
             </template>
@@ -121,19 +122,22 @@ import { reqDeptList,reqDept,reqCreateDept,reqDeleteDept,reqUpdateDept } from '.
 import { ElMessage } from 'element-plus';
 const tableData=ref([])
 
+//--------------------------------------------------------------加载-------------------------------------------------------
 //加载所有部门
 async function getDeptList() {
     let res=await reqDeptList()
     tableData.value=res.results
 }
-
 getDeptList()
+//---------------------------------------------------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------删除------------------------------------------------------
 //删除部门
 //定义列表，存放选中的用户
 const multipleSelection=ref([])
-
 function handleSelectionChange(val){
-    multipleSelection.value=val
+    multipleSelection.value=val//勾选后那一条的整个对象都传进来
     console.log('选中了',multipleSelection)
 }
 async function delHandle(id){
@@ -158,26 +162,13 @@ async function delHandle(id){
         }
     })
 }
+//----------------------------------------------------------------------------------------------------------------------
 
-//监听属性
-watch(()=>editForm.value.pid_id,(new_value,old_value)=>{
-  if(editForm.value.pid_id){
-    editForm.value.type=0
-  }else{
-    editForm.value.type=0
-  }
-})
 
-watch(()=>editForm.value.type,(new_value,old_value)=>{
-  if(editForm.value.type){
-    chooseParentDept.value=false
-  }else{
-    chooseParentDept.value=true
-  }
-})
+//新增部门对话框弹窗功能
+const dialogVisible=ref(false)  //关闭弹窗，如果为true，那么显示弹窗
 
-//新增部门对话框功能
-const dialogVisible=ref(false)
+//响应式变量，用来保存表单组件实例
 const editFormRef=ref(null)
 //新增部门数据的字典
 const editForm=ref({
@@ -186,8 +177,9 @@ const editForm=ref({
     enabled:1,
     pid_id:''
 })
+
 //新增时，是否显示下拉-->子级部门
-//校验表单
+//校验表单规则
 const editFormRules=ref({
     name: [
         { required: true, message: '岗位名必填', trigger: 'blur' },
@@ -196,7 +188,7 @@ const editFormRules=ref({
     dept_sort: [
         { required: true, message: '请输入部门序号', trigger: 'blur' }]
 })
-
+//表单恢复初始化
 function  handleClose(){
     dialogVisible.value=false
     editForm.value={
@@ -207,6 +199,7 @@ function  handleClose(){
     }
 }
 
+//editForm.value保存数据，editFormRef.value提供操作表单的方法。
 async function submitForm() {
   // 数据校验过后，才能提交
   await editFormRef.value.validate(async (valid, fields) => {     //valid表单校验是否通过，fields校验失败的字段以及错误信息
@@ -214,8 +207,8 @@ async function submitForm() {
       //发送网络请求，提交数据
       let res
       // editForm如果没有pid_id，是最顶级--》就把pid_id删除
-      if (!editForm.value.pid_id) {
-        delete editForm.value.pid_id
+      if (editForm.value.type === 1) {
+          editForm.value.pid_id = null
       }
       if (editForm.value.id) {
         // 修改
@@ -246,6 +239,24 @@ async function editHandle(id) {
   // 显示新增框
   dialogVisible.value = true
 }
+
+const chooseParentDept = ref(false)//是否显示“上级部门”的选择框
+//监听属性
+watch(()=>editForm.value.pid_id,(new_value,old_value)=>{
+  if(editForm.value.pid_id){
+    editForm.value.type=0
+  }else{
+    editForm.value.type=1//那他就是顶级部门
+  }
+})
+
+watch(()=>editForm.value.type,(new_value,old_value)=>{
+  if(editForm.value.type){
+    chooseParentDept.value=false// 是顶级部门，不用选择上级
+  }else{
+    chooseParentDept.value=true // 不是顶级部门，需要选择上级
+  }
+})
 
 </script>
 

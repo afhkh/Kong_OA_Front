@@ -7,11 +7,11 @@ export const reqLogin=(username,password)=>request.post('system/user/login',{'us
 export const reqAuth=()=>request.get('system/auth/auth')
 
 //岗位相关
-export const reqJonList=()=>request.get('system/job/jobs')
+export const reqJobList=()=>request.get('system/job/jobs')
 export const reqJob=(job_id)=>request.get(`system/job/jobs/${job_id}`)  //这里要用反引号，因为是路径参数
-export const reqUpdateJob=(job_id,data)=>request.put(`system/job/jobs/${job_id}`,{data})
+export const reqUpdateJob=(job_id,data)=>request.put(`system/job/jobs/${job_id}`,{...data})
 export const reqDeleteJob=(ids)=>request.delete('system/job/jobs/',{data:ids})  //请求体参数写法    这三个都是请求体参数，只是参数位置不一样，写法不一样
-export const reqCreateJob=(data)=>request.post('system/job/jobs',{data})        //这俩都是请求体
+export const reqCreateJob=(data)=>request.post('system/job/jobs',{...data})        //这俩都是请求体
 //角色相关
 export const reqRoleList=()=>request.get('system/role/roles')
 export const reqRole=(role_id)=>request.get(`system/role/roles/${role_id}`)  
